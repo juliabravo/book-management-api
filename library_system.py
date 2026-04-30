@@ -1,3 +1,5 @@
+import json
+import os
 class Book:
 
     def __init__(self, title, author, pages, is_read):
@@ -17,6 +19,7 @@ class Book:
             self.pages = pages
 
         self.is_read = is_read
+
 
     def to_dict(self):
         return {
@@ -44,6 +47,7 @@ class Book:
 class Library:
     def __init__(self):
         self.books = []
+        self.load_from_file("library_data.json")
 
     def add_book(self, book):
         self.books.append(book)
@@ -72,43 +76,62 @@ class Library:
     
     def get_total_pages(self):
         return sum(book.pages for book in self.books)
+    
+    def save_to_file(self, filename="library_data.json"):
+        data_to_save = [book.to_dict() for book in self.books]
 
-        
+        with open(filename, 'w') as f:
+            json.dump(data_to_save, f, indent=4)
 
-# create books
-book1 = Book('Crime and Punishment', 'Fyodor Dostoevsky', 557, True)
-book2 = Book('Hocus Pocus', 'Kurt Vonnegut', 324, False)
-broken_book = Book(' ', "Some Author", -50, False)
-print(broken_book.describe())
+    def load_from_file(self, filename):
+        if os.path.exists(filename):
+            with open(filename,'r') as file:
+                data = json.load(file)
+                for item in data:
+                    new_book = Book(item['title'], item['author'], item['pages'],item['is_read'])
+                    self.add_book(new_book)
 
-# create library and add books
-my_library = Library()
-my_library.add_book(book1)
-my_library.add_book(book2)
 
-print("--- Initial Inventory ---")
-my_library.list_inventory()
 
-# change status
-book2.read_book()
 
-print("\n---Updated Inventory ---")
-my_library.list_inventory()
 
-print(my_library.list_inventory())
-print(my_library.get_titles_only())
+if __name__ == "__main__":        
+    # create books
+    book1 = Book('Crime and Punishment', 'Fyodor Dostoevsky', 557, True)
+    book2 = Book('Hocus Pocus', 'Kurt Vonnegut', 324, False)
+    broken_book = Book(' ', "Some Author", -50, False)
+    print(broken_book.describe())
 
-# my_library.find_by_author(input("author name: "))
+    # create library and add books
+    my_library = Library()
+    my_library.add_book(book1)
+    my_library.add_book(book2)
 
-# books by author
-search_query = input("Search for an author: ")
-results = my_library.find_by_author(search_query)
+    print("--- Initial Inventory ---")
+    my_library.list_inventory()
 
-if results:
-    print(f'I found {len(results)} books:')
-    for book in results:
-        print(book.describe())
-else:
-    print("No books by that author were found.")
+    # change status
+    book2.read_book()
 
-print(my_library.get_total_pages())
+    print("\n---Updated Inventory ---")
+    my_library.list_inventory()
+
+    print(my_library.list_inventory())
+    print(my_library.get_titles_only())
+
+    # my_library.find_by_author(input("author name: "))
+
+    # books by author
+    search_query = input("Search for an author: ")
+    results = my_library.find_by_author(search_query)
+
+    if results:
+        print(f'I found {len(results)} books:')
+        for book in results:
+            print(book.describe())
+    else:
+        print("No books by that author were found.")
+
+    print(my_library.get_total_pages())
+
+    my_library.save_to_file()
