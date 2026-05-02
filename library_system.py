@@ -1,8 +1,9 @@
 import json
 import os
+from datetime import date
 class Book:
 
-    def __init__(self, title, author, pages, is_read):
+    def __init__(self, title, author, pages, is_read, progress_log=None):
         # validate title
         if not title or title.strip() == "":
             self.title = "Unknown Title"
@@ -18,7 +19,13 @@ class Book:
         else:
             self.pages = pages
 
+        if progress_log is None:
+            self.progress_log = []
+        else:
+            self.progress_log = progress_log
+
         self.is_read = is_read
+
 
 
     def to_dict(self):
@@ -26,7 +33,8 @@ class Book:
             "title": self.title,
             "author": self.author,
             "pages": self.pages,
-            "is_read": self.is_read
+            "is_read": self.is_read,
+            "progress_log": self.progress_log
         }
 
 
@@ -43,6 +51,17 @@ class Book:
 
     def update_page_count(self, pages):
         self.pages = pages
+
+    def log_progress(self, pages_read):
+        log = {
+            "date": str(date.today()),
+            "pages": pages_read
+        }
+
+        self.progress_log.append(log)
+
+    
+
 
 class Library:
     def __init__(self):
@@ -88,7 +107,8 @@ class Library:
             with open(filename,'r') as file:
                 data = json.load(file)
                 for item in data:
-                    new_book = Book(item['title'], item['author'], item['pages'],item['is_read'])
+                    saved_log = item.get('progress_log', [])
+                    new_book = Book(item['title'], item['author'], item['pages'],item['is_read'], progress_log=saved_log)
                     self.add_book(new_book)
 
 
@@ -104,8 +124,8 @@ if __name__ == "__main__":
 
     # create library and add books
     my_library = Library()
-    my_library.add_book(book1)
-    my_library.add_book(book2)
+    # my_library.add_book(book1)
+    # my_library.add_book(book2)
 
     print("--- Initial Inventory ---")
     my_library.list_inventory()

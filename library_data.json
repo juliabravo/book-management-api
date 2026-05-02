@@ -1,14 +1,14 @@
 [
     {
-        "title": "Crime and Punishment",
-        "author": "Fyodor Dostoevsky",
-        "pages": 557,
-        "is_read": true
-    },
-    {
-        "title": "Hocus Pocus",
+        "title": "Slaughterhouse-Five",
         "author": "Kurt Vonnegut",
-        "pages": 324,
-        "is_read": true
+        "pages": 275,
+        "is_read": true,
+        "progress_log": [
+            {
+                "date": "2026-05-02",
+                "pages": 275
+            }
+        ]
     }
 ]
